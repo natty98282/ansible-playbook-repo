@@ -1,13 +1,13 @@
 - name: simple pv vg and lv creation
   hosts: all
   tasks:
-     - name: Create a physical volume on disks /dev/sdc
-       community.general.parted:
-           device: /dev/sdc
-           number: 1
-           flags: [ lvm ]
-           state: present
-           part_end: 100%
+    - name: Create a physical volume on disks /dev/sdc
+      community.general.parted:
+        device: /dev/sdc
+        number: 1
+        flags: [ lvm ]
+        state: present
+        part_end: 100%
  
      - name: Create a volume group on disks /dev/sdb
        community.general.lvg:
