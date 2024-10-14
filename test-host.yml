@@ -3,4 +3,4 @@
   tasks:
     - name: Ping Host and Run test command
       ansible.builtin.shell:
-        cmd: cat /etc/os-release
+        cmd: ls -l
