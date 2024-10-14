@@ -1,7 +1,5 @@
 - name: simple ping pong
   hosts: all
   tasks:
-    - name: Test Yum Command
-      yum:
-        name: httpd
-        state: latest
+    - name: Ping Host and Run test command
+      ansible.builtin.shell: mkdir test
