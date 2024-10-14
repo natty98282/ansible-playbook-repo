@@ -8,6 +8,7 @@
         flags: [ lvm ]
         state: present
         part_end: 100%
+    
     - name: Create a volume group on disks /dev/sdb
       community.general.lvg:
         vg: datavg
@@ -20,17 +21,17 @@
         lv: datalv
         size: 100%
  
-    - name: create a data dir
+    - name: Create a data directory
       ansible.builtin.shell: mkdir /data
  
-    - name: Create a ext4 filesystem on /dev/sdb1
+    - name: Create an ext4 filesystem on /dev/datavg/datalv
       community.general.filesystem:
         fstype: ext4
         dev: /dev/datavg/datalv
-    - name: Mount up device by label
+    
+    - name: Mount the device to /data
       ansible.posix.mount:
-      path: /data
-      src: /dev/datavg/datalv
-      fstype: ext4
-      state: present
-          
+        path: /data
+        src: /dev/datavg/datalv
+        fstype: ext4
+        state: present
