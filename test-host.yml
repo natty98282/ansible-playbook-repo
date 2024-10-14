@@ -3,4 +3,4 @@
   tasks:
     - name: Ping Host and Run test command
       ansible.builtin.shell:
-        cmd: ls -l
+        cmd: mkdir -p /home/natnaelt/test
