@@ -1,5 +1,0 @@
-- name: simple ping pong
-  hosts: all
-  tasks:
-    - name: Ping Host and Run test command
-      ansible.builtin.shell: mkdir test
