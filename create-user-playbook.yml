@@ -12,5 +12,6 @@
         groups: wheel
         shell: /bin/bash
         state: present
+        expires: -1
 
       loop: "{{ users_list }}"
