@@ -17,7 +17,7 @@
       loop: "{{ users_list }}"
 
     - name: expire user password
-      command: "password -e {{ item.name }}"
+      command: "passwd -e {{ item.name }}"
 
       loop: "{{ users_list }}"
 
