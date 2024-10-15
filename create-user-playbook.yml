@@ -5,7 +5,7 @@
 
   tasks:
     - name: create user from the given variable list
-      ansible.buildin.user:
+      user:
         name: "{{ item.name }}"
         password: "{{ item.password }}"
         append: true
