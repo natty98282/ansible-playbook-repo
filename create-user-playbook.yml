@@ -1,0 +1,13 @@
+- name: create user on target machine
+  hosts: all
+  
+  vars:
+
+  tasks:
+    - name: create user from the given variable list
+      user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        state: present
+
+      loop: "{{ users_list }}"
