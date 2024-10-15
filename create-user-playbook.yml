@@ -8,8 +8,8 @@
       ansible.buildin.user:
         name: "{{ item.name }}"
         password: "{{ item.password }}"
-        append: yes
-        group: wheel
+        append: true
+        groups: wheel
         shell: /bin/bash
         state: present
 
