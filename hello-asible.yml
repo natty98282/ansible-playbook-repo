@@ -1,0 +1,5 @@
+- name: Hello Host ansible playbook
+  hosts: all
+  tasks:
+    - name: ping host task
+      ansible.builin.ping:
