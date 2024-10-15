@@ -5,9 +5,12 @@
 
   tasks:
     - name: create user from the given variable list
-      user:
+      ansible.buildin.user:
         name: "{{ item.name }}"
         password: "{{ item.password }}"
+        append: yes
+        group: wheel
+        shell: /bin/bash
         state: present
 
       loop: "{{ users_list }}"
