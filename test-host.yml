@@ -2,5 +2,4 @@
   hosts: all
   tasks:
     - name: Ping Host and Run test command
-      ansible.builtin.shell:
-        cmd: cat /etc/os-release
+      ansible.builtin.shell: mkdir test
