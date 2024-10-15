@@ -15,3 +15,9 @@
         expires: -1
 
       loop: "{{ users_list }}"
+
+    - name: expire user password
+      command: "password -e {{ item.name }}"
+
+      loop: "{{ users_list }}"
+
