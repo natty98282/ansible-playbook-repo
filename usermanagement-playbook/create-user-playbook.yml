@@ -4,7 +4,7 @@
   vars:
 
   tasks:
-    - name: create user from the given variable list
+    - name: create sudoer user on Redhat os
       user:
         name: "{{ item.name }}"
         password: "{{ item.password }}"
@@ -13,6 +13,20 @@
         shell: /bin/bash
         state: present
         expires: -1
+      
+      when: ansible_facts['os_family'] == "RedHat"
+    
+    - name: create sudoer user on debian based os
+      user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+        append: true
+        groups: sudo
+        shell: /bin/bash
+        state: present
+        expires: -1
+      
+      when: ansible_facts['os_family'] == "RedHat"
 
       loop: "{{ users_list }}"
 
