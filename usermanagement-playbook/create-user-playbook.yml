@@ -1,7 +1,5 @@
 - name: create user on target machine
   hosts: all
-  
-  vars:
 
   tasks:
     - name: create sudoer user on Redhat os
@@ -15,7 +13,7 @@
         expires: -1
       
       when: ansible_facts['os_family'] == "RedHat"
-    
+      loop: "{{ users_list }}"
     - name: create sudoer user on debian based os
       user:
         name: "{{ item.name }}"
