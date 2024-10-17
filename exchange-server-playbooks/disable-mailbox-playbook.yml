@@ -1,5 +1,5 @@
 - name: Disable user mailbox from Exchange Server 2019
-  hosts: all
+  hosts: Microsoft Exchange Server
   gather_facts: yes
 
   tasks:
