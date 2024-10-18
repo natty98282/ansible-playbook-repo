@@ -8,10 +8,10 @@
         script: |
 
           #define remote username on exchange server
-          $username = "{{ ansible_user }}"
+          $username = "natnaelt"
 
           #define remote user password
-          $password = "{{ ansible_password }}" | ConvertTo-SecureString -AsPlainText -Force
+          $password = "N@ti82825439" | ConvertTo-SecureString -AsPlainText -Force
 
           #create user credential for remtote powershell excution
           $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
