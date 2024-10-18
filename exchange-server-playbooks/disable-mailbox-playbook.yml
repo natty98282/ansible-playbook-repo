@@ -8,10 +8,10 @@
         script: |
 
           #define remote username on exchange server
-          $username = "natnaelt"
+          $username = "{{ ansible_user }}"
 
           #define remote user password
-          $password = "N@ti82825439" | ConvertTo-SecureString -AsPlainText -Force
+          $password = "{{ ansible_password }}" | ConvertTo-SecureString -AsPlainText -Force
 
           #create user credential for remtote powershell excution
           $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
@@ -23,7 +23,7 @@
           Import-PSSession $Session -DisableNameChecking
 
           #excute Disable mailbox user cmdlet
-          Disable-Mailbox -Identity "{{ usename }}"  -Confirm:$false
+          Disable-Mailbox -Identity "{{ username }}"  -Confirm:$false
 
           #remove remote session
           Remove-PSSession $Session
