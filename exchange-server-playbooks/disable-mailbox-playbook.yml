@@ -23,11 +23,10 @@
           Import-PSSession $Session -DisableNameChecking
 
           #excute Disable mailbox user cmdlet
-          Disable-Mailbox -Identity "{{item.username}}"  -Confirm:$false
+          Disable-Mailbox -Identity "{{ usename }}"  -Confirm:$false
 
           #remove remote session
           Remove-PSSession $Session
 
       become_method: runas
       become_user: Administrator
-      loop: "{{ users_list }}"
