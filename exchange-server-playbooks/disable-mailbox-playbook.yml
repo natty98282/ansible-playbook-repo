@@ -43,7 +43,7 @@
     - name: Check if mailbox was disabled successfully
       fail:
         msg: "Failed to disable mailbox for user {{ username }}."
-      when: result.rc != 0
+      when: result.failed
 
     - name: Send email notification of success
       community.general.mail:
@@ -53,7 +53,7 @@
         from: "awx.alert@coopbankoromiasc.com"
         subject: "Mailbox Disabled Successfully for {{ username }}"
         body: "The mailbox for user {{ username }} has been disabled successfully on Exchange Server."
-      when: result.rc == 0
+      when: result.changed and not result.failed
 
     - name: Send email notification of failure
       community.general.mail:
@@ -63,4 +63,4 @@
         from: "awx.alert@coopbankoromiasc.com"
         subject: "Error Disabling Mailbox for {{ username }}"
         body: "An error occurred while disabling the mailbox for user {{ username }}. Error details: {{ result.stdout }}"
-      when: result.rc != 0
+      when: result.failed
