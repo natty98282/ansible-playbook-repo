@@ -1,0 +1,53 @@
+- name: Schedule disable user task on mailbox server
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Create directory structure for the scrpits
+      ansible.windows.win_file:
+        path: C:\Scripts
+        state: directory
+    - name: create a powershell script content
+      set_fact:
+        script_content: |
+          #define remote username on exchange server
+          $username = "coopbank\natnaelt"
+
+          #define remote user password
+          $password = "N@ti82825439" | ConvertTo-SecureString -AsPlainText -Force
+
+          #create user credential for remtote powershell excution
+          $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
+
+          #create a session on one of exchange server
+          $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://CBOHQ-MBX-01.coopbank.local/PowerShell/ -Authentication Kerberos -Credential $UserCredential
+
+          #import powesheel session
+          Import-PSSession $Session -DisableNameChecking
+
+          #excute Disable mailbox user cmdlet
+          Disable-Mailbox -Identity "testuser"  -Confirm:$false
+
+          #remove remote session
+          Remove-PSSession $Session
+
+    - name: create a poweshell file to disable specified user mailbox
+      ansible.windows.win_copy:
+        content: "{{ script_content }}"
+        dest: C:\Scripts\DisableUserAccount-testuser.ps1
+
+    - name: Verify the script file content
+      ansible.windows.win_shell: Get-Content C:\Scripts\DisableUserAccount-testuser.ps1
+      register: script_content_output
+
+    - name: create a windows task to disable user
+      community.windows.win_scheduled_task:
+        name: Disable testuser Mailbox
+        description: Disable mailx box user schedule
+        actions:
+          - path: powershell.exe
+            arguments: -ExecutionPolicy Bypass -File C:\Scripts\DisableUserAccount-testuser.ps1
+        triggers:
+          - type: time
+            start_boundary: '2024-10-17T15:00:00'
+        username: "{{ansible_user}}"
+        password: "{{ansible_password}}"

@@ -6,27 +6,61 @@
     - name: Run create remote session command and disable exchange user
       ansible.windows.win_powershell:
         script: |
+          try {
+              # Define remote username on exchange server
+              $username = "{{ ansible_user }}"
 
-          #define remote username on exchange server
-          $username = "{{ ansible_user }}"
+              # Define remote user password
+              $password = "{{ ansible_password }}" | ConvertTo-SecureString -AsPlainText -Force
 
-          #define remote user password
-          $password = "{{ ansible_password }}" | ConvertTo-SecureString -AsPlainText -Force
+              # Create user credential for remote powershell execution
+              $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
 
-          #create user credential for remtote powershell excution
-          $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
+              # Create a session on one of the exchange servers
+              $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://CBOHQ-MBX-01.coopbank.local/PowerShell/ -Authentication Kerberos -Credential $UserCredential
 
-          #create a session on one of exchange server
-          $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://CBOHQ-MBX-01.coopbank.local/PowerShell/ -Authentication Kerberos -Credential $UserCredential
+              # Import powershell session
+              Import-PSSession $Session -DisableNameChecking
 
-          #import powesheel session
-          Import-PSSession $Session -DisableNameChecking
+              # Execute Disable mailbox user cmdlet
+              Disable-Mailbox -Identity "{{ username }}" -Confirm:$false
 
-          #excute Disable mailbox user cmdlet
-          Disable-Mailbox -Identity "{{ username }}"  -Confirm:$false
+              # Remove remote session
+              Remove-PSSession $Session
 
-          #remove remote session
-          Remove-PSSession $Session
-
+              # If execution was successful, return success message
+              Write-Output "Mailbox for {{ username }} disabled successfully"
+          }
+          catch {
+              # If there is an error, return the error message
+              Write-Output "Error disabling mailbox for {{ username }}: $_"
+              exit 1
+          }
       become_method: runas
       become_user: Administrator
+      register: result
+
+    - name: Check if mailbox was disabled successfully
+      fail:
+        msg: "Failed to disable mailbox for user {{ username }}."
+      when: result.rc != 0
+
+    - name: Send email notification of success
+      ansible.builtin.mail:
+        host: smtp.coopbankoromiasc.com
+        port: 25
+        to: "natnael.tadesse@coopbankoromiasc.com"
+        from: "awx.alert@coopbankoromiasc.com"
+        subject: "Mailbox Disabled Successfully for {{ username }}"
+        body: "The mailbox for user {{ username }} has been disabled successfully on Exchange Server."
+      when: result.rc == 0
+
+    - name: Send email notification of failure
+      ansible.builtin.mail:
+        host: smtp.coopbankoromiasc.com
+        port: 25
+        to: "natnael.tadesse@coopbankoromiasc.com"
+        from: "awx.alert@coopbankoromiasc.com"
+        subject: "Error Disabling Mailbox for {{ username }}"
+        body: "An error occurred while disabling the mailbox for user {{ username }}. Error details: {{ result.stdout }}"
+      when: result.rc != 0
