@@ -46,7 +46,7 @@
       when: result.rc != 0
 
     - name: Send email notification of success
-      ansible.builtin.mail:
+      mail:
         host: smtp.coopbankoromiasc.com
         port: 25
         to: "natnael.tadesse@coopbankoromiasc.com"
@@ -56,7 +56,7 @@
       when: result.rc == 0
 
     - name: Send email notification of failure
-      ansible.builtin.mail:
+      mail:
         host: smtp.coopbankoromiasc.com
         port: 25
         to: "natnael.tadesse@coopbankoromiasc.com"
