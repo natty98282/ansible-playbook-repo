@@ -64,5 +64,5 @@
     - name: Fail if task fails on all hosts
       fail:
         msg: "faild on all hosts"
-      when: task_succeeded | default(false) == false
+      when: task_succeeded == false
       run_once: true
