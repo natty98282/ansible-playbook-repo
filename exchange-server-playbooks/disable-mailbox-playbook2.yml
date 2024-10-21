@@ -5,7 +5,7 @@
   tasks:
     - name: Attempt task on the mailbox server
       block:
-        - name: Run task on mailbox server {{ inventory_hostname }}
+        - name: Run task on mailbox server "{{ ansible_hostname }}"
           ansible.windows.win_powershell:
           script: |
             try {
@@ -19,7 +19,7 @@
                 $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
 
                 # Create a session on one of the exchange servers
-                $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://cbohq-mbx-01.coopbank.local/PowerShell/ -Authentication Kerberos -Credential $UserCredential
+                $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://"{{ ansible_host_fqn }}""/PowerShell/ -Authentication Kerberos -Credential $UserCredential
 
                 # Import powershell session
                 Import-PSSession $Session -DisableNameChecking
