@@ -1,5 +1,5 @@
 - name: Disable user mailbox from Exchange Server 2019
-  hosts: all
+  hosts: linux
   gather_facts: yes
 
   tasks:
@@ -39,28 +39,11 @@
       become_method: runas
       become_user: Administrator
       register: result
+      failed_when:
+        - result.error | length > 0
+        - "'Error disabling mailbox' in result.host_out"
 
-    - name: Check if mailbox was disabled successfully
+    - name: Fail if disabling mailbox failed
       fail:
-        msg: "Failed to disable mailbox for user {{ username }}."
-      when: result.failed
-
-    - name: Send email notification of success
-      community.general.mail:
-        host: smtp.coopbankoromiasc.com
-        port: 25
-        to: "natnael.tadesse@coopbankoromiasc.com"
-        from: "awx.alert@coopbankoromiasc.com"
-        subject: "Mailbox Disabled Successfully for {{ username }}"
-        body: "The mailbox for user {{ username }} has been disabled successfully on Exchange Server."
-      when: result.changed and not result.failed
-
-    - name: Send email notification of failure
-      community.general.mail:
-        host: smtp.coopbankoromiasc.com
-        port: 25
-        to: "natnael.tadesse@coopbankoromiasc.com"
-        from: "awx.alert@coopbankoromiasc.com"
-        subject: "Error Disabling Mailbox for {{ username }}"
-        body: "An error occurred while disabling the mailbox for user {{ username }}. Error details: {{ result.stdout }}"
-      when: result.failed
+        msg: "Task failed: {{ result.host_out }} {{ result.host_err }}"
+      when: result.error | length > 0
