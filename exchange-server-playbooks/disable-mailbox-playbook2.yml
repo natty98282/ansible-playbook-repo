@@ -12,6 +12,14 @@
       ansible.windows.win_powershell:
         script: |
           try {
+              $SamAccountName = "{{ username }}"
+              $EmailAddress = "{{ email }}"
+              
+              $User = Get-Mailbox -Identity $SamAccountName -ErrorAction SilentlyContinue
+              
+              if ($null -eq $User) {
+                  $User = Get-Mailbox -Identity $EmailAddress -ErrorAction SilentlyContinue
+              }
               # Define remote username on exchange server
               $username = "{{ ansible_user }}"
 
@@ -28,7 +36,7 @@
               Import-PSSession $Session -DisableNameChecking
 
               # Execute Disable mailbox user cmdlet
-              Disable-Mailbox -Identity "{{ username }}" -Confirm:$false
+              Disable-Mailbox -Identity $User.Alias -Confirm:$false
 
               # Remove remote session
               Remove-PSSession $Session
