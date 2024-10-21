@@ -1,0 +1,62 @@
+---
+- name: Loop through hosts in 'exchange_mailbox_server' and run task on first successful host
+  hosts: exchange_mailbox_server  # Directly target the mailbox server group
+  gather_facts: no  # Disable gathering facts for faster execution
+  tasks:
+    - name: Attempt task on the mailbox server
+      block:
+        - name: Run task on mailbox server {{ inventory_hostname }}
+          ansible.windows.win_powershell:
+          script: |
+            try {
+                # Define remote username on exchange server
+                $username = "{{ ansible_user }}"
+
+                # Define remote user password
+                $password = "{{ ansible_password }}" | ConvertTo-SecureString -AsPlainText -Force
+
+                # Create user credential for remote powershell execution
+                $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
+
+                # Create a session on one of the exchange servers
+                $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://cbohq-mbx-01.coopbank.local/PowerShell/ -Authentication Kerberos -Credential $UserCredential
+
+                # Import powershell session
+                Import-PSSession $Session -DisableNameChecking
+
+                # Execute Disable mailbox user cmdlet
+                Disable-Mailbox -Identity "{{ username }}" -Confirm:$false
+
+                # Remove remote session
+                Remove-PSSession $Session
+
+                # If execution was successful, return success message
+                Write-Output "Mailbox for {{ username }} disabled successfully"
+            }
+            catch {
+                # If there is an error, return the error message
+                Write-Output "Error disabling mailbox for {{ username }}: $_"
+                exit 1
+            }
+          become_method: runas
+          become_user: Administrator
+          register: result
+          
+        - name: Check if the task succeeded
+          when: result.error | length == 0
+          debug:
+            msg: "Task succeeded on {{ inventory_hostname }}. Stopping further attempts."
+          
+        - name: Mark task as succeeded
+          when: result.error | length == 0
+          meta: end_play  # End play if successful
+
+      rescue:
+        - name: Handle failure case
+          debug:
+            msg: "Task failed on {{ inventory_hostname }}. Moving to the next host."
+
+    - name: Final message if all hosts fail
+      when: result is failed
+      debug:
+        msg: "Task failed: {{ result.host_out }} {{ result.host_err }}"
