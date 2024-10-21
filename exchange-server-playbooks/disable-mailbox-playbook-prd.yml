@@ -7,7 +7,6 @@
         task_succeeded: "{{ hostvars[item]['task_succeeded'] | default(false) }}"
       loop: "{{ groups['Microsoft_Exchange_Server'] }}"
       when: "'task_succeeded' in hostvars[item]"
-      run_once: true
 
     - name: Disable mailbox user
       ansible.windows.win_powershell:
@@ -59,16 +58,10 @@
 
     - name: Set task_succeeded fact if the task was successful
       ansible.builtin.set_fact:
-        task_succeeded: "{{ task_succeeded | default([]) + [inventory_hostname] }}"
+        task_succeeded: true
       when: result.error | length == 0
-
-    - name: Check if any host succeeded
-      ansible.builtin.set_fact:
-        any_host_succeeded: "{{ task_succeeded | length > 0 }}"
-      run_once: true
 
     - name: Fail if task fails on all hosts
       fail:
-        msg: "Failed on all hosts"
-      when: any_host_succeeded == false
-      run_once: true
+        msg: "faild on all hosts"
+      when: task_succeeded | default(false) == false
