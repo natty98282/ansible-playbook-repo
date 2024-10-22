@@ -64,10 +64,10 @@
       run_once: true
       ansible.builtin.fail:
         msg: "Task failed on all hosts"
-      when: "'true' not in hostvars | map(attribute='task_succeeded') | list"
+      when: "'true' not in groups['all'] | map('extract', hostvars, 'task_succeeded') | list"
 
     - name: End play if at least one host succeeded
       meta: end_play
-      when: "'true' in hostvars | map(attribute='task_succeeded') | list"
+      when: "'true' in groups['all'] | map('extract', hostvars, 'task_succeeded') | list"
       delegate_to: localhost
       run_once: true
