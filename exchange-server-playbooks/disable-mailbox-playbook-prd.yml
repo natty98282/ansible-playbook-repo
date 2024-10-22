@@ -56,15 +56,15 @@
 
     - name: Set per-host success fact
       ansible.builtin.set_fact:
-        task_succeeded: "{{ result.error | length == 0 }}"
-      when: result.rc is defined
+        task_succeeded: "{{ result.error | length == 0}}"
+      when: result.error is defined
 
     - name: Check if any host succeeded
+      delegate_to: localhost
+      run_once: true
       ansible.builtin.fail:
         msg: "Task failed on all hosts"
       when: "'true' not in hostvars | map(attribute='task_succeeded') | list"
-      delegate_to: localhost
-      run_once: true
 
     - name: End play if at least one host succeeded
       meta: end_play
