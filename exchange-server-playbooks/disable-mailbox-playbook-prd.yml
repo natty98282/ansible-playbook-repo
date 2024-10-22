@@ -2,13 +2,12 @@
   gather_facts: no
   tasks:
 
-    - name: Check if task has already succeeded on any host
+    - name: Initialize success variable
       ansible.builtin.set_fact:
-        task_succeeded: "{{ hostvars[item]['task_succeeded'] | default(false) }}"
-      loop: "{{ groups['Microsoft_Exchange_Server'] }}"
-      when: "'task_succeeded' in hostvars[item]"
+        task_succeeded_global: false
+      run_once: true
 
-    - name: Disable mailbox user
+    - name: Disable mailbox user on each host
       ansible.windows.win_powershell:
         script: |
           try {
@@ -53,15 +52,21 @@
       become_method: runas
       become_user: Administrator
       register: result
-      when: task_succeeded | default(false) == false
       ignore_errors: true
 
-    - name: Set task_succeeded fact if the task was successful
+    - name: Set success fact per host if the task was successful
       ansible.builtin.set_fact:
         task_succeeded: true
       when: result.error | length == 0
 
+    - name: Collect success across all hosts
+      ansible.builtin.set_fact:
+        task_succeeded_global: true
+      when: result.error | length == 0
+      delegate_facts: true
+
     - name: Fail if task fails on all hosts
       fail:
-        msg: "faild on all hosts"
-      when: task_succeeded | default(false) == false
+        msg: "Task failed on all hosts"
+      when: task_succeeded_global == false
+      run_once: true

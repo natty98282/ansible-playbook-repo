@@ -51,7 +51,7 @@
     - name: Set task_succeeded fact if the task was successful
       ansible.builtin.set_fact:
         task_succeeded: true
-      when: result.error == 0
+      when: result.error | length == 0
 
     - name: Fail if task fails on all hosts
       fail:
