@@ -2,7 +2,7 @@
   gather_facts: no
   tasks:
 
-    - name: Initialize global success variable
+    - name: Initialize success variable
       ansible.builtin.set_fact:
         task_succeeded_global: false
       run_once: true
@@ -13,7 +13,7 @@
           try {
               $SamAccountName = "{{ username }}"
               $EmailAddress = "{{ email }}"
-
+              
               # Define remote username on exchange server
               $username = "{{ ansible_user }}"
 
@@ -30,7 +30,7 @@
               Import-PSSession $Session -DisableNameChecking
 
               $User = Get-Mailbox -Identity $SamAccountName -ErrorAction SilentlyContinue
-
+              
               if ($null -eq $User) {
                   $User = Get-Mailbox -Identity $EmailAddress -ErrorAction SilentlyContinue
               }
@@ -54,20 +54,19 @@
       register: result
       ignore_errors: true
 
-    - name: Set per-host success fact
+    - name: Set success fact per host if the task was successful
       ansible.builtin.set_fact:
-        task_succeeded: "{{ result.error | length == 0}}"
-      when: result.error is defined
+        task_succeeded: true
+      when: result.error | length == 0
 
-    - name: Check if any host succeeded
-      delegate_to: localhost
-      run_once: true
-      ansible.builtin.fail:
+    - name: Collect success across all hosts
+      ansible.builtin.set_fact:
+        task_succeeded_global: true
+      when: result.error | length == 0
+      delegate_facts: true
+
+    - name: Fail if task fails on all hosts
+      fail:
         msg: "Task failed on all hosts"
-      when: "'true' not in groups['all'] | map('extract', hostvars, 'task_succeeded') | list"
-
-    - name: End play if at least one host succeeded
-      meta: end_play
-      when: "'true' in groups['all'] | map('extract', hostvars, 'task_succeeded') | list"
-      delegate_to: localhost
+      when: task_succeeded_global == false
       run_once: true
