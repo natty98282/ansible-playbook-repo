@@ -5,7 +5,6 @@
     - name: Initialize success variable
       ansible.builtin.set_fact:
         task_succeeded_global: false
-      run_once: true
 
     - name: Disable mailbox user on each host
       ansible.windows.win_powershell:
@@ -13,7 +12,7 @@
           try {
               $SamAccountName = "{{ username }}"
               $EmailAddress = "{{ email }}"
-              
+
               # Define remote username on exchange server
               $username = "{{ ansible_user }}"
 
@@ -30,7 +29,7 @@
               Import-PSSession $Session -DisableNameChecking
 
               $User = Get-Mailbox -Identity $SamAccountName -ErrorAction SilentlyContinue
-              
+
               if ($null -eq $User) {
                   $User = Get-Mailbox -Identity $EmailAddress -ErrorAction SilentlyContinue
               }
