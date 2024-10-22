@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: Microsoft_Exchange_Server
   gather_facts: yes
   serial: 1
   tasks:
@@ -57,4 +57,4 @@
     - name: Faild to disable user on all hosts
       ansible.builtin.fail:
         msg: Faild to disable use on all hosts
-      when: (inventory_hostname == groups['all'][-1])  and (result.error | length > 0)
+      when: (inventory_hostname == groups['Microsoft_Exchange_Server'][-1])  and (result.error | length > 0)
