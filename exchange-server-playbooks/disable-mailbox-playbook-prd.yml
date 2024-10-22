@@ -59,4 +59,4 @@
         msg: Faild to disable use on all hosts
       when: 
         - inventory_hostname == groups['all'][-1] 
-        - result.error | length == 0
+        - result.error | length > 0
