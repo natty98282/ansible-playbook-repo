@@ -68,4 +68,4 @@
       fail:
         msg: "Task failed on all hosts"
       when: "'true' not in hostvars | map(attribute='task_succeeded') | list"
-      run_once: true
+      # run_once: true
