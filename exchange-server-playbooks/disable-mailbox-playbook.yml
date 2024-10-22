@@ -1,12 +1,15 @@
-- name: Disable user mailbox from Exchange Server 2019
-  hosts: all
+- hosts: Microsoft_Exchange_Server
   gather_facts: yes
-
+  serial: 1
   tasks:
-    - name: Run create remote session command and disable exchange user
+
+    - name: Disable mailbox user on each host
       ansible.windows.win_powershell:
         script: |
           try {
+              $SamAccountName = "{{ username }}"
+              $EmailAddress = "{{ email }}"
+
               # Define remote username on exchange server
               $username = "{{ ansible_user }}"
 
@@ -17,13 +20,19 @@
               $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
 
               # Create a session on one of the exchange servers
-              $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://CBOHQ-MBX-01.coopbank.local/PowerShell/ -Authentication Kerberos -Credential $UserCredential
+              $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://"{{ ansible_host_fqn }}"/PowerShell/ -Authentication Kerberos -Credential $UserCredential
 
               # Import powershell session
               Import-PSSession $Session -DisableNameChecking
 
+              $User = Get-Mailbox -Identity $SamAccountName -ErrorAction SilentlyContinue
+
+              if ($null -eq $User) {
+                  $User = Get-Mailbox -Identity $EmailAddress -ErrorAction SilentlyContinue
+              }
+
               # Execute Disable mailbox user cmdlet
-              Disable-Mailbox -Identity "{{ username }}" -Confirm:$false
+              Disable-Mailbox -Identity $User.Alias -Confirm:$false
 
               # Remove remote session
               Remove-PSSession $Session
@@ -39,11 +48,8 @@
       become_method: runas
       become_user: Administrator
       register: result
-      failed_when:
-        - result.error | length > 0
-        - "'Error disabling mailbox' in result.host_out"
-
-    - name: Fail if disabling mailbox failed
-      fail:
-        msg: "Task failed: {{ result.host_out }} {{ result.host_err }}"
-      when: result.error | length > 0
+      ignore_errors: true
+     # End play onece the task succeded
+    - name: End play if task succeeds
+      meta: end_play
+      when: result.error | length == 0
