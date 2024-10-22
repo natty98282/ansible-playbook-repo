@@ -2,9 +2,10 @@
   gather_facts: no
   tasks:
 
-    - name: Initialize success variable
+    - name: Initialize global success variable
       ansible.builtin.set_fact:
         task_succeeded_global: false
+      run_once: true
 
     - name: Disable mailbox user on each host
       ansible.windows.win_powershell:
@@ -53,15 +54,14 @@
       register: result
       ignore_errors: true
 
-    - name: Set success fact per host if the task was successful
+    - name: Set per-host success fact
       ansible.builtin.set_fact:
-        task_succeeded: true
-      when: result.error | length == 0
+        task_succeeded: "{{ result.error | length == 0 }}"
+      when: result.error is defined
 
-    - name: Collect success across all hosts
+    - name: Collect global success
       ansible.builtin.set_fact:
-        task_succeeded_global: true
-      when: result.error | length == 0
+        task_succeeded_global: "{{ task_succeeded_global | default(false) or task_succeeded }}"
       delegate_facts: true
 
     - name: Fail if task fails on all hosts
