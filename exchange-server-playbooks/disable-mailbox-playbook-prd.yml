@@ -1,5 +1,5 @@
-- hosts: Microsoft_Exchange_Server
-  gather_facts: no
+- hosts: all
+  gather_facts: yes
   tasks:
 
     - name: Initialize success variable
