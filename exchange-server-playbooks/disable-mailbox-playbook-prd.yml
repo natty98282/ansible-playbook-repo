@@ -67,5 +67,5 @@
     - name: Fail if task fails on all hosts
       fail:
         msg: "Task failed on all hosts"
-      when: task_succeeded_global == false
+      when: "'true' not in hostvars | map(attribute='task_succeeded') | list"
       run_once: true
