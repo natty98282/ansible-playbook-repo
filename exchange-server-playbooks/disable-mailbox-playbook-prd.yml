@@ -1,11 +1,7 @@
 - hosts: all
   gather_facts: yes
+  serial: 1
   tasks:
-
-    - name: Initialize success variable
-      ansible.builtin.set_fact:
-        task_succeeded_global: false
-      run_once: true
 
     - name: Disable mailbox user on each host
       ansible.windows.win_powershell:
@@ -13,7 +9,7 @@
           try {
               $SamAccountName = "{{ username }}"
               $EmailAddress = "{{ email }}"
-              
+
               # Define remote username on exchange server
               $username = "{{ ansible_user }}"
 
@@ -30,7 +26,7 @@
               Import-PSSession $Session -DisableNameChecking
 
               $User = Get-Mailbox -Identity $SamAccountName -ErrorAction SilentlyContinue
-              
+
               if ($null -eq $User) {
                   $User = Get-Mailbox -Identity $EmailAddress -ErrorAction SilentlyContinue
               }
@@ -53,20 +49,14 @@
       become_user: Administrator
       register: result
       ignore_errors: true
-
-    - name: Set success fact per host if the task was successful
-      ansible.builtin.set_fact:
-        task_succeeded: true
+     # End play onece the task succeded
+    - name: End play if task succeeds
+      meta: end_play
       when: result.error | length == 0
-
-    - name: Collect success across all hosts
-      ansible.builtin.set_fact:
-        task_succeeded_global: true
-      when: result.error | length == 0
-      delegate_facts: true
-
-    - name: Fail if task fails on all hosts
-      fail:
-        msg: "Task failed on all hosts"
-      when: task_succeeded_global == false
-      run_once: true
+    
+    - name: Faild to disable user on all hosts
+      ansible.builtin.fail:
+        msg: Faild to disable use on all hosts
+      when: 
+        - inventory_hostname == groups['all'][-1] 
+        - result.error | length == 0
