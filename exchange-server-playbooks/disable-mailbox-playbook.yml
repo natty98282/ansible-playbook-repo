@@ -1,4 +1,4 @@
-- hosts: Microsoft_Exchange_Server
+- hosts: all
   gather_facts: yes
   serial: 1
   tasks:
@@ -53,3 +53,10 @@
     - name: End play if task succeeds
       meta: end_play
       when: result.error | length == 0
+    
+    - name: Faild to disable user on all hosts
+      ansible.builtin.fail:
+        msg: Faild to disable use on all hosts
+      when: 
+        - inventory_hostname == groups['all'][-1] 
+        - result.error | length == 0
