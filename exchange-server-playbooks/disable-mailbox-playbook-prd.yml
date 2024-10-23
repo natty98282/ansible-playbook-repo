@@ -27,7 +27,7 @@
 
               $User = Get-Mailbox -Identity $SamAccountName -ErrorAction SilentlyContinue
 
-              if ($null -eq $User) {
+              if ($null -ne $User) {
                   $User = Get-Mailbox -Identity $EmailAddress -ErrorAction SilentlyContinue
               }
 
