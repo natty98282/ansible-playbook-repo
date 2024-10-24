@@ -1,7 +1,7 @@
-- hosts: linux
+- name: Vmware create VM playbook
+  hosts: localhost
+  connection: local 
   gather_facts: yes
-  collections:
-    - community.vmware
   tasks:
     - name: create Virtual Machine on Vcenter Server
       vmware_guest:
