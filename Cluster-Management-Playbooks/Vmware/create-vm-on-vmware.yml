@@ -31,9 +31,10 @@
             ip: "{{ ip_address }}"
             netmask: "{{ subnet_mask }}"
             gateway: "{{ network_gateway }}"
-            connected: true
-            device_type: vmxnet3
-            start_connected: true
+            type: static
+            device_name: vmxnet3
+            start_connected: yes
+          
         wait_for_ip_address: true
         customization:
           dns_servers:
