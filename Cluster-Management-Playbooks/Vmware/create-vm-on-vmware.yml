@@ -27,14 +27,19 @@
           version: latest # Hardware version of virtual machine
           boot_firmware: "efi"
         networks:
-          - connected: true
-            device_type: vmxnet3
-            gateway: "{{ network_gateway }}"
+          - name:  "{{ port_group }}"
             ip: "{{ ip_address }}"
             netmask: "{{ subnet_mask }}"
-            name:  "{{ port_group }}"
+            gateway: "{{ network_gateway }}"
+            connected: true
+            device_type: vmxnet3
             start_connected: true
-            type: static
-        wait_for_customization: true
         wait_for_ip_address: true
+        customization:
+          dns_servers:
+            - 8.8.8.8
+            - 4.2.2.2
+          script_text: |
+            #!/bin/bash
+            touch /tmp/touch-from-playbook
 
