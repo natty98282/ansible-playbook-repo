@@ -27,15 +27,14 @@
           version: latest # Hardware version of virtual machine
           boot_firmware: "efi"
         networks:
-          connected: true
-          device_type: vmxnet3
-          gateway: "{{ network_gateway }}"
-          ip: "{{ ip_address }}"
-          netmask: "{{ subnet_mask }}"
-          name:  "{{ port_group }}"
-          start_connected: true
-          type: static
+          - connected: true
+            device_type: vmxnet3
+            gateway: "{{ network_gateway }}"
+            ip: "{{ ip_address }}"
+            netmask: "{{ subnet_mask }}"
+            name:  "{{ port_group }}"
+            start_connected: true
+            type: static
         wait_for_customization: true
         wait_for_ip_address: true
 
-      delegate_to: localhost
