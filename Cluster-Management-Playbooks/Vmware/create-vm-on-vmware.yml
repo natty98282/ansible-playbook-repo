@@ -28,19 +28,14 @@
           boot_firmware: "efi"
         networks:
           - name:  "{{ port_group }}"
+            type: static
+            device_name: vmxnet3
             ip: "{{ ip_address }}"
             netmask: "{{ subnet_mask }}"
             gateway: "{{ network_gateway }}"
-            type: static
-            device_name: vmxnet3
-            start_connected: yes
-          
+            dns_servers:
+              - 8.8.8.8
+              - 4.2.2.2
+            domain: coopbank.local
         wait_for_ip_address: true
-        customization:
-          dns_servers:
-            - 8.8.8.8
-            - 4.2.2.2
-          script_text: |
-            #!/bin/bash
-            touch /tmp/touch-from-playbook
 
