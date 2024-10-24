@@ -1,0 +1,41 @@
+- hosts: linux
+  gather_facts: yes
+  collections:
+    - community.vmware
+  tasks:
+    - name: create Virtual Machine on Vcenter Server
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        datacenter: "{{ dc_name }}"
+        folder: "{{ folder_name }}"
+        name: "{{ vm_name }}"
+        state: poweredon
+        template: "{{ template_name }}"
+        datastore: "{{ datastore }}"
+        esxi_hostname: "{{ esxi_hostname }}"
+        hardware:
+          memory_mb: "{{ memory }}"
+          num_cpus: "{{ vcpu }}"
+          num_cpu_cores_per_socket: "{{ vcpu_per_socket }}"
+          scsi: paravirtual
+          hotadd_cpu: True
+          hotremove_cpu: True
+          hotadd_memory: True
+          version: latest # Hardware version of virtual machine
+          boot_firmware: "efi"
+        networks:
+          connected: true
+          device_type: vmxnet3
+          gateway: "{{ network_gateway }}"
+          ip: "{{ ip_address }}"
+          netmask: "{{ subnet_mask }}"
+          name:  "{{ port_group }}"
+          start_connected: true
+          type: static
+        wait_for_customization: true
+        wait_for_ip_address: true
+
+      delegate_to: localhost
