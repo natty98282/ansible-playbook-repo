@@ -41,7 +41,7 @@
         register: vm_creation_result
     - name: Wait for VM to power on
       ansible.builtin.pause:
-        minutes: 1  # Adjust this based on VM provisioning time
+        minutes: 2  # Adjust this based on VM provisioning time
       when: vm_creation_result.changed
 
     - name: Configure static IP after VM is created
