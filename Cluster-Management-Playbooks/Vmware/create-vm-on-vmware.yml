@@ -12,7 +12,7 @@
         datacenter: "{{ dc_name }}"
         folder: "{{ folder_name }}"
         name: "{{ vm_name }}"
-        state: poweredon
+        state: restarted
         template: "{{ template_name }}"
         datastore: "{{ datastore }}"
         esxi_hostname: "{{ esxi_hostname }}"
@@ -26,16 +26,38 @@
           hotadd_memory: True
           version: latest # Hardware version of virtual machine
           boot_firmware: "efi"
+        # networks:
+        #   - name:  "{{ port_group }}"
+        #     type: static
+        #     device_name: vmxnet3
+        #     ip: "{{ ip_address }}"
+        #     netmask: "{{ subnet_mask }}"
+        #     gateway: "{{ network_gateway }}"
+        #     dns_servers:
+        #       - 8.8.8.8
+        #       - 4.2.2.2
+        #     domain: coopbank.local
+        # wait_for_ip_address: true
+        register: vm_creation_result
+    - name: Wait for VM to power on
+      ansible.builtin.pause:
+        minutes: 1  # Adjust this based on VM provisioning time
+      when: vm_creation_result.changed
+
+    - name: Configure static IP after VM is created
+      community.vmware.vmware_guest_network:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        datacenter: "{{ dc_name }}"
+        name: "{{ vm_name }}"
+        folder: "{{ folder_name }}"
         networks:
-          - name:  "{{ port_group }}"
-            type: static
-            device_name: vmxnet3
+          - name: "{{ port_group }}"
+            device_type: vmxnet3
             ip: "{{ ip_address }}"
             netmask: "{{ subnet_mask }}"
             gateway: "{{ network_gateway }}"
-            dns_servers:
-              - 8.8.8.8
-              - 4.2.2.2
-            domain: coopbank.local
-        wait_for_ip_address: true
+      when: vm_creation_result.changed
 
