@@ -38,7 +38,7 @@
         #       - 4.2.2.2
         #     domain: coopbank.local
         # wait_for_ip_address: true
-        register: vm_creation_result
+      register: vm_creation_result
     - name: Wait for VM to power on
       ansible.builtin.pause:
         minutes: 2  # Adjust this based on VM provisioning time
