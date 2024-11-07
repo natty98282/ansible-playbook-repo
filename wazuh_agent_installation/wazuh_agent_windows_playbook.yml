@@ -23,4 +23,4 @@
       win_service:
         name: WazuhSvc
         start_mode: auto
-        state: started
+        state: restarted
