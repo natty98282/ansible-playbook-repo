@@ -1,0 +1,26 @@
+---
+- name: Install Wazuh agent on Windows and restart service
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Download Wazuh agent MSI
+      win_get_url:
+        url: "https://packages.wazuh.com/4.x/windows/wazuh-agent-4.8.0-1.msi"
+        dest: "C:\\Windows\\Temp\\wazuh-agent-4.8.0-1.msi"
+    
+    - name: Install Wazuh agent
+      win_package:
+        path: "C:\\Windows\\Temp\\wazuh-agent-4.8.0-1.msi"
+        arguments: '/q WAZUH_MANAGER=10.103.205.52 WAZUH_REGISTRATION_PASSWORD=password WAZUH_AGENT_GROUP=Windows'
+        state: present
+    
+    - name: Clean up the MSI installer
+      win_file:
+        path: "C:\\Windows\\Temp\\wazuh-agent-4.8.0-1.msi"
+        state: absent
+
+    - name: Ensure Wazuh service is started
+      win_service:
+        name: WazuhSvc
+        start_mode: auto
+        state: started
