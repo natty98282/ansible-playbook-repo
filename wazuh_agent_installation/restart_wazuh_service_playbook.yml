@@ -1,0 +1,10 @@
+---
+- name: Install Wazuh agent on Windows and restart service
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Ensure Wazuh service is restarted
+      win_service:
+        name: WazuhSvc
+        start_mode: auto
+        state: restarted
