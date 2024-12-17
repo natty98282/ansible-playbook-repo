@@ -25,7 +25,7 @@
         groups:
         - Users
         - Administrators
-      when: ansible_facts['platform'] == "windows"
+      when: ansible_facts['os_family'] == "Windows"
     - name: Add user to sudoers (Ubuntu/Debian)
       ansible.builtin.user:
         name: "{{ username }}"
