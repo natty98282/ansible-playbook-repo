@@ -19,13 +19,14 @@
     
     - name: Create a user on Windows Server
       ansible.windows.win_user:
-        name: bob
+        name: {{item.username}}
         password: Coop#54321
         state: present
         groups:
         - Users
         - Administrators
       when: ansible_facts['os_family'] == "Windows"
+      loop: {{"users"}}
     - name: Add user to sudoers (Ubuntu/Debian)
       ansible.builtin.user:
         name: "{{ username }}"
