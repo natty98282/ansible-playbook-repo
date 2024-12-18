@@ -3,19 +3,21 @@
   tasks:
     - name: Create user on Ubuntu/Debian
       ansible.builtin.user:
-        name: "{{ username }}"
+        name: "{{ item.username }}"
         shell: /bin/bash
         state: present
         create_home: yes
       when: ansible_facts.os_family == "Debian"
+      loop: "{{users}}"
 
     - name: Create user on Fedora
       ansible.builtin.user:
-        name: "{{ username }}"
+        name: "{{ item.username }}"
         shell: /bin/bash
         state: present
         create_home: yes
       when: ansible_facts.distribution == "Fedora"
+      loop: "{{users}}"
     
     - name: Create a user on Windows Server
       ansible.windows.win_user:
@@ -30,22 +32,26 @@
       loop: "{{users}}"
     - name: Add user to sudoers (Ubuntu/Debian)
       ansible.builtin.user:
-        name: "{{ username }}"
+        name: "{{ item.username }}"
         groups: sudo
         append: yes
       when: ansible_facts.os_family == "Debian"
+      loop: "{{users}}"
     
 
     - name: Add user to sudoers (CentOS/RHEL/Fedora)
       ansible.builtin.user:
-        name: "{{ username }}"
+        name: "{{ item.username }}"
         groups: wheel
         append: yes
       when: ansible_facts.os_family in ["RedHat", "Fedora"]
+      loop: "{{users}}"
     
     - name: Set a password for the user
       ansible.builtin.user:
-        name: "{{ username }}"
-        password: "{{ password | password_hash('sha512') }}"
-      when: username is defined and password is defined
+        name: "{{ item.username }}"
+        password: "{{ item.password | password_hash('sha512') }}"
+      when: username is defined and password is defined and  nsible_facts.os_family in ["RedHat", "Fedora", "Debian"]
+      
+      loop: "{{users}}"
   
