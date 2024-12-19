@@ -10,10 +10,10 @@
       set_fact:
         script_content: |
           #define remote username on exchange server
-          $username = "coopbank\natnaelt"
+          $username = "{{ ansible_user }}"
 
           #define remote user password
-          $password = "N@ti82825439" | ConvertTo-SecureString -AsPlainText -Force
+          $password = "{{ ansible_password }}" | ConvertTo-SecureString -AsPlainText -Force
 
           #create user credential for remtote powershell excution
           $UserCredential = New-Object System.Management.Automation.PSCredential($username, $password)
