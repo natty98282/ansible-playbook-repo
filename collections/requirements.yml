@@ -1,4 +1,5 @@
 collections:
     - community.vmware
     - ansible.windows
+    - community.general
 
