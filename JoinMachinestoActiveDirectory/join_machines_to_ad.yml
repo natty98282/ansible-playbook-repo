@@ -22,7 +22,7 @@
           - samba
           - adcli
           - krb5-user
-        state: present
+        state: absent
 
     - name: Discover the AD domain
       command: realm discover {{ ad_domain }}
