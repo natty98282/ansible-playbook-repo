@@ -1,0 +1,49 @@
+---
+- name: Install and configure realmd to join Active Directory
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install realmd package
+      apt:
+        name: realmd
+        state: present
+
+    - name: Install required packages for AD integration
+      apt:
+        name:
+          - sssd
+          - samba
+          - samba-common-tools
+          - adcli
+          - krb5-user
+        state: present
+
+    - name: Discover the AD domain
+      command: realm discover {{ ad_domain }}
+      register: realm_discover
+      ignore_errors: yes
+
+    - name: Join the machine to the Active Directory domain
+      command: echo "{{ ad_admin_password }}" | realm join --user={{ ad_admin_user }} {{ ad_domain }} --password-stdin
+      when: realm_discover.failed
+
+    - name: Start and enable the SSSD service
+      service:
+        name: sssd
+        state: started
+        enabled: yes
+
+    - name: Ensure the realm is joined successfully
+      command: realm list
+      register: realm_list
+
+    - name: Display realm information
+      debug:
+        var: realm_list
