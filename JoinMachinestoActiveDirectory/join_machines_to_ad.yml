@@ -20,7 +20,6 @@
         name:
           - sssd
           - samba
-          - samba-common-tools
           - adcli
           - krb5-user
         state: present
