@@ -6,4 +6,3 @@
       ansible.windows.win_service:
         name: telegraf
         state: stopped
-        start_mode: auto
