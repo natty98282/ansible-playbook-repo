@@ -19,11 +19,15 @@
         url: https://github.com/natty98282/ansible-playbook-repo/blob/master/Agent_installation/telegraf.conf
         dest: C:\\Program Files\\InfluxData\\telegraf\\
 
-    - name: Install Telegraf as a Windows Service
+    - name: Install Telegraf as a service
       ansible.windows.win_shell:
         command: |
-          C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.exe --service install --config "C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.conf"
-
+          "C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.exe" `
+          --service install `
+          --config "C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.conf"
+      args:
+        executable: powershell
+        
     - name: Start Telegraf service
       ansible.windows.win_service:
         name: telegraf
