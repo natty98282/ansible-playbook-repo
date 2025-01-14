@@ -21,7 +21,7 @@
 
     - name: Install Telegraf as a service using win_command
       ansible.windows.win_command:
-        command: '"C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.exe" --service install --config "C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.conf"'
+        cmd: '"C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.exe" --service install --config "C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.conf"'
 
     - name: Start Telegraf service
       ansible.windows.win_service:
