@@ -5,5 +5,5 @@
     - name: Restart Telegraf service
       ansible.windows.win_service:
         name: telegraf
-        state: stoped
+        state: stopped
         start_mode: auto
