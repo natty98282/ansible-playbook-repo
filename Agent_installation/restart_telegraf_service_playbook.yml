@@ -1,0 +1,9 @@
+---
+- name: Restart Telegraf Service
+  hosts: all
+  tasks:
+    - name: Restart Telegraf service
+      ansible.windows.win_service:
+        name: telegraf
+        state: restarted
+        start_mode: auto
