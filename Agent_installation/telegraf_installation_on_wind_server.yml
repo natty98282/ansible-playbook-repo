@@ -8,7 +8,7 @@
         dest: C:\Telegraf_installation\telegraf.zip
 
     - name: Extract Telegraf ZIP
-      ansible.windows.win_unzip:
+      community.windows.win_unzip:
         src: C:\Telegraf_installation\telegraf.zip
         dest: C:\Program Files\InfluxData\telegraf\
         remote_src: true
