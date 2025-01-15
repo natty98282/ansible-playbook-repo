@@ -1,0 +1,12 @@
+---
+- name: Set timezone to Nairobi (GMT+3)
+  hosts: all  # all hosts in the inventory
+  tasks:
+    - name: Set timezone to Nairobi (GMT+3)
+      ansible.windows.win_timezone:
+        timezone: "E. Africa Standard Time"
+      register: timezone_result
+
+    - name: Verify the timezone
+      ansible.builtin.debug:
+        msg: "Timezone changed successfully to {{ timezone_result.timezone }}"
