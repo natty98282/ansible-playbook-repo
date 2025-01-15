@@ -3,12 +3,7 @@
   hosts: all
   gather_facts: yes
   tasks:
-    - name: Download telegraf.conf from GitHub
-      ansible.windows.win_get_url:
-        url: https://raw.githubusercontent.com/natty98282/ansible-playbook-repo/master/Agent_installation/telegraf.conf
-        dest: C:\\Program Files\\InfluxData\\telegraf\\telegraf-1.33.0\\telegraf.conf
-
     - name: Ensure telegraf service is restarted
       win_service:
         name: telegraf
-        state: restarted
+        state: absent
