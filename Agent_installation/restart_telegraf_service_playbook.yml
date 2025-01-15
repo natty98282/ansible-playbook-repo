@@ -11,4 +11,4 @@
       win_service:
         name: telegrafs
         start_mode: auto
-        state: started
+        state: restarted
