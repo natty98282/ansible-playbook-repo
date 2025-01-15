@@ -6,6 +6,32 @@
       ansible.windows.win_timezone:
         timezone: "E. Africa Standard Time"
       register: timezone_result
+      
+    - name: Enable "Set time automatically"
+      ansible.windows.win_regedit:
+        path: HKLM:\SYSTEM\CurrentControlSet\Services\w32time\Parameters
+        name: Type
+        data: "NTP"
+        type: string
+
+    - name: Start and enable Windows Time service
+      ansible.windows.win_service:
+        name: W32Time
+        start_mode: auto
+        state: started
+
+    - name: Enable "Set time zone automatically"
+      ansible.windows.win_regedit:
+        path: HKLM:\SYSTEM\CurrentControlSet\Services\tzautoupdate
+        name: Start
+        data: 2
+        type: dword
+
+    - name: Restart Windows Time and Timezone services to apply changes
+      ansible.windows.win_shell:
+        cmd: |
+          net stop w32time
+          net start w32time
 
     - name: Verify the timezone
       ansible.builtin.debug:
