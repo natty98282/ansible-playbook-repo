@@ -1,0 +1,27 @@
+---
+- name: Install Windos Exporter agent on Windows and restart service
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Download Windows Exporter agent MSI
+      win_get_url:
+        url: "https://github.com/prometheus-community/windows_exporter/releases/download/v0.30.0/windows_exporter-0.30.0-amd64.msi"
+        dest: "C:\\Windows\\Temp\\windows_exporter-0.30.0-amd64.msi"
+    
+    - name: Install Wazuh agent
+      win_package:
+        path: "C:\\Windows\\Temp\\windows_exporter-0.30.0-amd64.msi"
+        arguments: '/q WAZUH_MANAGER=10.103.205.52 WAZUH_REGISTRATION_PASSWORD=password WAZUH_AGENT_GROUP=Windows'
+        state: present
+    
+    - name: Clean up the MSI installer
+      win_file:
+        path: "C:\\Windows\\Temp\\windows_exporter-0.30.0-amd64.msi"
+        arguments: 'ENABLED_COLLECTORS=iis,os,cpu,memory /qn'
+        state: absent
+
+    - name: Ensure Wazuh service is started
+      win_service:
+        name: windows_exporter
+        start_mode: auto
+        state: restarted
