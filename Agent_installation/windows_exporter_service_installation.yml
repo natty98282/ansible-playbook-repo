@@ -11,7 +11,7 @@
     - name: Install Windows Exporter agent
       win_package:
         path: "C:\\Windows\\Temp\\windows_exporter-0.30.0-amd64.msi"
-        arguments: 'ENABLED_COLLECTORS=iis,os,cpu,memory /qn'
+        arguments: 'ENABLED_COLLECTORS=iis,os,cpu,memory'
         state: present
     
     - name: Clean up the MSI installer
