@@ -3,4 +3,5 @@ collections:
     - community.windows
     - ansible.windows
     - community.general
+    - ibm.power_aix
 

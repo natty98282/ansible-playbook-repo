@@ -1,0 +1,12 @@
+---
+- name: Remove AIX user Playbook
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Remove AIX user
+      ibm.power_aix.user:
+        state: absent
+        name: "{{ item.username }}"
+      loop: "{{ aix_users_list }}"
+
