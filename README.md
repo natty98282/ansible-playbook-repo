@@ -46,10 +46,10 @@ These playbooks are designed to be used with Ansible or AWX/Ansible Tower.
 Here are some screenshots of the AWX dashboard and login screen:
 
 ### Login Screen
-![Login Screen](assets/login.jpg)
+![Login Screen](assets/login.png)
 
 ### AWX Home Dashboard
-![AWX Home Dashboard](assets/awx-home-dashboard.jpg)
+![AWX Home Dashboard](assets/awx-home-dashboard.png)
 
 ### AWX Dashboard
-![AWX Dashboard](assets/awx-dashboard.jpg)
+![AWX Dashboard](assets/awx-dashboard.png)
